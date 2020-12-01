@@ -1,11 +1,11 @@
-package epmc.prism.plugin;
+package epmc.pomdp.plugin;
 
 import epmc.plugin.BeforeModelCreation;
-import epmc.prism.value.OperatorEvaluatorPRISMPow;
+import epmc.pomdp.value.OperatorEvaluatorPRISMPow;
 import epmc.value.operatorevaluator.SimpleEvaluatorFactory;
 
-public final class BeforeModelCreationPRISM implements BeforeModelCreation {
-    public final static String IDENTIFIER = "before-model-creation-prism";
+public final class BeforeModelCreationPOMDP implements BeforeModelCreation {
+    public final static String IDENTIFIER = "before-model-creation-pomdp";
 
     @Override
     public String getIdentifier() {

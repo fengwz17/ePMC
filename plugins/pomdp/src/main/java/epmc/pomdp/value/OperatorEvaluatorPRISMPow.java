@@ -18,7 +18,7 @@
 
  *****************************************************************************/
 
-package epmc.prism.value;
+package epmc.pomdp.value;
 
 import epmc.operator.Operator;
 import epmc.prism.operator.OperatorPRISMPow;

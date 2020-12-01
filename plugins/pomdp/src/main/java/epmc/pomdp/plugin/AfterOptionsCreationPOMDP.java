@@ -34,7 +34,7 @@ import epmc.pomdp.model.PropertyPRISM;
 import epmc.pomdp.model.convert.UtilPrismConverter;
 import epmc.pomdp.options.OptionsPOMDP;
 
-public final class AfterOptionsCreationPRISM implements AfterOptionsCreation {
+public final class AfterOptionsCreationPOMDP implements AfterOptionsCreation {
     public final static String IDENTIFIER = "after-options-creation-pomdp";
 
     @Override
