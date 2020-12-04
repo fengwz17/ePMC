@@ -18,9 +18,9 @@ const int detectRange = 10 * 10;
 const int NMAC = 3 * 3;
 
 // can observe the direction of intruder relative to own aircraft.
-observables
-	o : [0.. 2]
-endobservables
+// observables
+	// o : [0.. 2]
+// endobservables
 
 // assume the heading of own aircraft is always in the positive y-axis direction
 // o = 1: Left, (x2 - x1)^2 + (y2 - y1)^2 <= detectRange * detectRange & x2 <= x1

@@ -7,6 +7,13 @@ import java.util.List;
 import epmc.prism.model.Alternative;
 import epmc.prism.model.Command;
 
+/**
+ * Observables command
+ *
+ * 
+ * @author Andrea Turrini
+ */
+
 public final class ObsCommand {
     private final Command command;
     private final List<Alternative> observables = new ArrayList<>();
