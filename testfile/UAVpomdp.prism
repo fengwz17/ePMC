@@ -19,7 +19,7 @@ const int NMAC = 3 * 3;
 
 // can observe the direction of intruder relative to own aircraft.
 observables
-	o : [0.. 2]
+	o
 endobservables
 
 // assume the heading of own aircraft is always in the positive y-axis direction
