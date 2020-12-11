@@ -84,10 +84,8 @@ module own
 	// dis > 100        0.1                0.1                    0.8
 
 	// turn left and observe left, right, no-detection
-	[turnLeft] -10 < x1 <= 10 & disLeft <= detectRange & x2 <= x1 - 1 -> 
-																												1 : (x1' = x1 - 1) & (y1' = y1) & (0.8 : (o' = 1) + 0.1 : (o' = 2) + 0.1 : (o' = 0));
-	[turnLeft] -10 < x1 <= 10 & disLeft <= detectRange & x2 > x1 - 1 -> 
-																												1 : (x1' = x1 - 1) & (y1' = y1) & (0.1 : (o' = 1) + 0.8 : (o' = 2) + 0.1 : (o' = 0));
+	[turnLeft] -10 < x1 <= 10 & disLeft <= detectRange & x2 <= x1 - 1 ->  1 : (x1' = x1 - 1) & (y1' = y1) & (0.8 : (o' = 1) + 0.1 : (o' = 2) + 0.1 : (o' = 0));
+	[turnLeft] -10 < x1 <= 10 & disLeft <= detectRange & x2 > x1 - 1 -> 1 : (x1' = x1 - 1) & (y1' = y1) & (0.1 : (o' = 1) + 0.8 : (o' = 2) + 0.1 : (o' = 0));
 	[turnLeft] -10 < x1 <= 10 & disLeft > detectRange -> 1: (x1' = x1 - 1) & (y1' = y1) & (0.1 : (o' = 1) + 0.1 : (o' = 2) + 0.8 : (o' = 0));
 
 	// turn right
