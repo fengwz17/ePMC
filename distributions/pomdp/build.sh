@@ -21,13 +21,6 @@ prepare_plugin command-help
 prepare_plugin command-lump
 prepare_plugin constraintsolver
 prepare_plugin constraintsolver-lp-solve
-prepare_plugin propertysolver-propositional
-prepare_plugin propertysolver-operator
-prepare_plugin propertysolver-reward
-prepare_plugin propertysolver-filter
-prepare_plugin propertysolver-pctl
-prepare_plugin propertysolver-multiobjective
-prepare_plugin propertysolver-ltl-lazy
 prepare_plugin dd-cudd
 prepare_plugin dd-cudd-mtbdd
 prepare_plugin automaton-determinisation
