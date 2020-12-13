@@ -1,0 +1,5 @@
+epmc.jani.interaction.permanentstorage.AfterOptionsCreationJANIInteractionPermanentStorage
+epmc.jani.interaction.plugin.AfterServerStartJANIInteraction
+epmc.jani.interaction.plugin.AfterOptionsCreationJANIInteraction
+epmc.jani.interaction.commandline.StartInConsoleJaniInteractionNoJani
+epmc.jani.interaction.commandline.StartInConsoleJaniInteractionJani

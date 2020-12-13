@@ -28,7 +28,6 @@ import epmc.expression.standard.ExpressionLiteral;
 import epmc.prism.expression.PrismExpressionParser;
 import epmc.prism.options.OptionsPRISM;
 import epmc.options.Options;
-import epmc.pomdp.options.OptionsPOMDP;
 import epmc.pomdp.model.ObsCommand;
 import epmc.prism.model.Alternative;
 import epmc.prism.model.Formulas;
@@ -1089,7 +1088,8 @@ private Command parseGuardedCommandDeclaration() :
 	(
 		<LCURL>
 		observables = parseUpdate()
-		<RCURL>	)?
+		<RCURL>
+	)?
 	{ token_source.SwitchTo(DEFAULT); }
 	(
 		<UPDATE_SEMICOLON>

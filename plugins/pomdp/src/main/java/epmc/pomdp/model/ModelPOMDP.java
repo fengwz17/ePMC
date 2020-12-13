@@ -37,12 +37,7 @@ public final class ModelPOMDP implements Model, ModelJANIConverter {
     public Semantics getSemantics() {
         return modelPRISM.getSemantics();
     }
-
-    @Override
-    public Properties getPropertyList() {
-        return modelPRISM.getPropertyList();
-    }
-
+    
     @Override
     public void read(Object part, InputStream... inputs) {
         assert inputs != null;
@@ -57,10 +52,10 @@ public final class ModelPOMDP implements Model, ModelJANIConverter {
         return IDENTIFIER;
     }
 
-    @Override
-    public ModelJANI toJANI(boolean forExporting) {
-        return modelPRISM.toJANI(forExporting);
-    }
+//    @Override
+//    public ModelJANI toJANI(boolean forExporting) {
+//        return modelPRISM.toJANI(forExporting);
+//    }
     
     public ModelPRISM getModelPRISM() {
         return modelPRISM;

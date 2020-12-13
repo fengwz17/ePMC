@@ -39,13 +39,6 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>epmc.jani</groupId>
-      <artifactId>epmc-jani-model</artifactId>
-      <version>0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../jani-model/target/epmc-jani-model-0.jar</systemPath>
-    </dependency>
-    <dependency>
       <groupId>epmc.prism</groupId>
       <artifactId>epmc-prism-format</artifactId>
       <version>0</version>
