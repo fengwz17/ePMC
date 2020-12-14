@@ -51,6 +51,7 @@ public final class ModuleCommands implements Module {
     private final Map<Expression,JANIType> publicVariables;
     private final Map<Expression,Expression> initValues;
     private final ArrayList<Command> commands = new ArrayList<>();
+    private final ArrayList<Observation> observations = new ArrayList<>();
     private final Positional positional;
     private Expression invariants;
 
@@ -63,12 +64,14 @@ public final class ModuleCommands implements Module {
      * @param variables variables of the module and their types
      * @param initValues initial values of module variables
      * @param commands list of commands of the module
+     * @param observations list of observations of the module
      * @param positional position where module was defined
      */
     public ModuleCommands(String name,
             Map<Expression,JANIType> variables,
             Map<Expression,Expression> initValues,
             List<Command> commands,
+            List<Observation> observations,
             Expression invariants,
             Positional positional) {
         assert name != null;
@@ -103,9 +106,19 @@ public final class ModuleCommands implements Module {
         this.initValues = new HashMap<>();
         this.variables.putAll(variables);
         this.commands.addAll(commands);
+        this.observations.addAll(observations);
         this.initValues.putAll(initValues);
     }
 
+    public ModuleCommands(String name,
+            Map<Expression,JANIType> variables,
+            Map<Expression,Expression> initValues,
+            List<Command> commands,
+            Expression invariants,
+            Positional positional) {
+        this(name, variables, initValues, commands, null, invariants, positional);
+    }
+    
     /**
      * Constructs a new module with a new name in which all parts (variables,
      * synchronisation labels, etc.) are renamed according to <code>map</code>.

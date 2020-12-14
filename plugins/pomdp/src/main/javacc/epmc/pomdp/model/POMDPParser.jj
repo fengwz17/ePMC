@@ -28,9 +28,6 @@ import epmc.expression.standard.ExpressionLiteral;
 import epmc.prism.expression.PrismExpressionParser;
 import epmc.prism.options.OptionsPRISM;
 import epmc.options.Options;
-import epmc.pomdp.model.*;
-import epmc.prism.model.Module;
-import epmc.prism.model.*;
 import epmc.jani.model.type.JANIType;
 import epmc.jani.model.type.JANITypeInt;
 import epmc.jani.model.type.JANITypeReal;
@@ -38,6 +35,7 @@ import epmc.jani.model.type.JANITypeBool;
 import epmc.jani.model.type.JANITypeBounded;
 import epmc.time.JANITypeClock;
 import epmc.expression.standard.ExpressionTypeInteger;
+import epmc.util.Pair;
 
 import java.io.StringReader;
 import java.util.List;
@@ -199,12 +197,12 @@ TOKEN : // RESERVED KEYWORDS
 |	< MODULEEND : "endmodule" >
 |	< MULTIOBJECTIVE : "multi" >
 |	< NONDETERMINISTIC :	"nondeterministic" >
-|   < OBSERVABLESBEGIN : "observables" >
-|   < OBSERVABLESEND : "endobservables" >
+|	< OBSERVABLESBEGIN : "observables" >
+|	< OBSERVABLESEND : "endobservables" >
 |	< P : "P" >
 |	< PMAX : "Pmax" >
 |	< PMIN : "Pmin" >
-|   < POMDP : "pomdp" >
+|	< POMDP : "pomdp" >
 |	< POW : "pow" >
 |	< PROBABILISTIC : "probabilistic" >
 |	< PROB : "prob" >
@@ -365,7 +363,7 @@ TOKEN :
 }
 
 
-private Token actualParser(SystemDefinition[] sd, Semantics[] model, Expression[] init, Formulas formulae, List<Observable> observables, List<Module> modules, Map<Expression, JANIType> globalVariables, Map<Expression, Expression> globalInitValues, List<RewardStructure> rewards, List<PlayerDefinition> players)  :
+private Token actualParser(SystemDefinition[] sd, Semantics[] model, Expression[] init, Formulas formulae, Map<Expression, JANIType> observables, List<Module> modules, Map<Expression, JANIType> globalVariables, Map<Expression, Expression> globalInitValues, List<RewardStructure> rewards, List<PlayerDefinition> players)  :
 {
 	Token t;
 }
@@ -374,8 +372,8 @@ private Token actualParser(SystemDefinition[] sd, Semantics[] model, Expression[
 		model[0] = parseModelType() 
 	|
 		parseConstant(formulae)
-    |
-        parseObservables(observables)
+	|
+		parseObservables(observables)
 	|
 		parseLabel(formulae)
 	|
@@ -461,7 +459,7 @@ private void parseConstant(Formulas formulae)  :
 	)
 }
 
-private void parseObservables(List<Observable> observables)  :
+private void parseObservables(Map<Expression, JANIType> observables)  :
 {
 }
 {
@@ -606,6 +604,7 @@ private void parseModule(List<Module> modules)  :
 	Map<Expression, Expression> initValues = new HashMap<Expression,Expression>();
 	Expression[] invariants = new Expression[1];
 	List<Command> commands = new ArrayList<Command>();
+	List<Observation> observations = new ArrayList<Observation>();
 	Token t;
 	String ids;
 }
@@ -622,8 +621,8 @@ private void parseModule(List<Module> modules)  :
 		<EQ>
 		m = parseModuleRename(id)
 	|
-		parseModuleContent(variables, initValues, invariants, commands)
-		{ m = new ModuleCommands(id.toString(), variables, initValues, commands, invariants[0], null); }
+		parseModuleContent(variables, initValues, invariants, commands, observations)
+		{ m = new ModuleCommands(id.toString(), variables, initValues, commands, observations, invariants[0], null); }
 	)
 	<MODULEEND>
 	{
@@ -662,9 +661,9 @@ private void parseRenaming(Map<Expression, Expression> map)  :
 	{ map.put(oldId, newId); }
 }
 
-private void parseModuleContent(Map<Expression,JANIType> variables, Map<Expression,Expression> initValues, Expression[] invariants, List<Command> commands)  :
+private void parseModuleContent(Map<Expression,JANIType> variables, Map<Expression,Expression> initValues, Expression[] invariants, List<Command> commands, List<Observation> observations)  :
 {
-	Command c;
+	Pair<Command, Observation> pco;
 }
 {
 	(
@@ -674,8 +673,11 @@ private void parseModuleContent(Map<Expression,JANIType> variables, Map<Expressi
 		invariants[0] = parseInvariantDeclaration()
 	)?
 	(
-		c = parseGuardedCommandDeclaration()
-		{ commands.add(c); }
+		pco = parseGuardedCommandDeclaration()
+		{
+            commands.add(pco.getLeftElement());
+            observations.add(pco.getRightElement());
+		}
 	)*	
 }
 
@@ -1038,13 +1040,14 @@ private SystemDefinition parseSystemBase()  :
 	{ return sd; }
 }
 
-private Command parseGuardedCommandDeclaration() :
+private Pair<Command,Observation> parseGuardedCommandDeclaration() :
 {
 	Token literal;
 	Expression identifier = null;
 	Expression guard;
 	List<Alternative> updates;
 	List<Alternative> observables = null;
+	Observation observation = null;
 }
 {
 	<LBRACKET>
@@ -1073,6 +1076,7 @@ private Command parseGuardedCommandDeclaration() :
 		<LCURL>
 		observables = parseUpdate()
 		<RCURL>
+		{ observation = new Observation(identifier, guard, observables, null); }
 	)?
 	{ token_source.SwitchTo(DEFAULT); }
 	(
@@ -1080,7 +1084,7 @@ private Command parseGuardedCommandDeclaration() :
 	|
 		<SEMICOLON>
 	)
-	{ return new ObsCommand(identifier, guard, updates, observables, null); }
+	{ return new Pair<Command,Observation>(new Command(identifier, guard, updates, null), observation); }
 }
 
 private List<Alternative> parseUpdate() : 

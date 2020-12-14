@@ -96,11 +96,15 @@ public final class ModelPOMDP implements ModelJANIConverter {
         private Formulas formulas;
         private List<RewardStructure> rewards;
         private List<PlayerDefinition> players;
-        private List<Observable> observables;
+        private Map<Expression, JANIType> observables;
 
-        public Builder setObservables(List<Observable> observables) {
+        public Builder setObservables(Map<Expression, JANIType> observables) {
             this.observables = observables;
             return this;
+        }
+        
+        private Map<Expression, JANIType> getObservables() {
+            return observables;
         }
 
         public Builder setSemantics(Semantics semantics) {
@@ -200,6 +204,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
 
     private Semantics semanticsType;
     private final List<Module> modules = new ArrayList<>();
+    private Map<Expression, JANIType> observables;
     private final List<Module> publicModules = Collections.unmodifiableList(modules);
     private Expression initialStates;
     private Map<Expression,JANIType> globalVariables;
@@ -276,6 +281,20 @@ public final class ModelPOMDP implements ModelJANIConverter {
                 throw new IllegalArgumentException();
             }
         }
+        this.observables = new HashMap<>();
+        Map<Expression,JANIType> observables = builder.getObservables();
+        if (observables == null) {
+            observables = new HashMap<>();
+        }
+        for (Entry<Expression, JANIType> entry : observables.entrySet()) {
+            assert entry.getKey() != null;
+            assert entry.getValue() != null;
+        }
+        for (Entry<Expression,JANIType> entry : observables.entrySet()) {
+            if (!(entry.getKey() instanceof ExpressionIdentifier)) {
+                throw new IllegalArgumentException();
+            }
+        }
         List<RewardStructure> rewards = builder.getRewards();
         if (rewards == null) {
             rewards = new ArrayList<>();
@@ -295,6 +314,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
         this.globalVariables.putAll(globalVariables);
         this.globalInitValues.putAll(globalInitValues);
         expandGlobalVariables();
+        this.observables.putAll(observables);
         this.system = builder.getSystem() == null ? createDefaultSystem() : builder.getSystem();
         this.system.setModel(this);
         checkSystemDefinition();
