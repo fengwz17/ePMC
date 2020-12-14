@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import epmc.prism.model.Alternative;
-import epmc.prism.model.Command;
+// import epmc.prism.model.Alternative;
+// import epmc.prism.model.Command;
+
+import epmc.pomdp.model.Alternative;
+import epmc.pomdp.model.Command;
 
 /**
  * Observables command

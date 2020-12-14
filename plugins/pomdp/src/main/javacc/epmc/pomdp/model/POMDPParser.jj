@@ -28,7 +28,8 @@ import epmc.expression.standard.ExpressionLiteral;
 import epmc.prism.expression.PrismExpressionParser;
 import epmc.prism.options.OptionsPRISM;
 import epmc.options.Options;
-import epmc.pomdp.model.ObsCommand;
+import epmc.pomdp.model.*;
+import epmc.prism.model.Module;
 import epmc.prism.model.*;
 import epmc.jani.model.type.JANIType;
 import epmc.jani.model.type.JANITypeInt;
@@ -55,10 +56,10 @@ final class POMDPParser {
 	private final Set<String> otherNames = new HashSet<String>();
 	private final Set<String> rewardsNames = new HashSet<String>();
 	private Token expressionToken;
-	private ModelPRISM model;
+	private ModelPOMDP model;
 	private Object part;
 
-	public void setModel(ModelPRISM model) {
+	public void setModel(ModelPOMDP model) {
 		this.model = model;
 	}
 
@@ -66,7 +67,7 @@ final class POMDPParser {
 	  this.part = part;
 	}
 
-	public ModelPRISM parseModel()  {
+	public ModelPOMDP parseModel()  {
 	    Options options = Options.get();
 		try {
 			return privParseModel(options);
@@ -84,13 +85,13 @@ final class POMDPParser {
 		}
 	}
 
-	public ModelPRISM parseModel(boolean flatten)  {
+	public ModelPOMDP parseModel(boolean flatten)  {
 		Options options = Options.get();
 		options.set(OptionsPRISM.PRISM_FLATTEN, flatten);
 		return parseModel();
 	}
 
-	private ModelPRISM privParseModel(Options options) throws ParseException {
+	private ModelPOMDP privParseModel(Options options) throws ParseException {
 		SystemDefinition[] sd = new SystemDefinition[1]; 
 		sd[0] = null;
 		Semantics model[] = new Semantics[1];
@@ -108,13 +109,13 @@ final class POMDPParser {
 		Token t = actualParser(sd, model, init, formulae, observables, modules, globalVariables, globalInitValues, rewards, players);
 		ensure(!modules.isEmpty(), ProblemsPOMDP.PRISM_PARSER_NO_MODULE, newPositional(t.beginLine, t.beginColumn));
 		try {
-		  ModelPRISM result;
+		  ModelPOMDP result;
 		  if (this.model == null) {
-			result = new ModelPRISM();
+			result = new ModelPOMDP();
 	      } else {
 	        result = this.model;
 	      }
-			result.build(new ModelPRISM.Builder()
+			result.build(new ModelPOMDP.Builder()
 			  .setSemantics(model[0])
 			  .setObservables(observables)
 			  .setModules(modules)
