@@ -18,12 +18,9 @@ prepare_plugin command-check
 prepare_plugin command-explore
 prepare_plugin command-expression2automaton
 prepare_plugin command-help
-prepare_plugin command-lump
 prepare_plugin constraintsolver
 prepare_plugin constraintsolver-lp-solve
 prepare_plugin dd-cudd
 prepare_plugin dd-cudd-mtbdd
-prepare_plugin automaton-determinisation
-prepare_plugin jani-exporter
 prepare_plugin pomdp
 assemble_end pomdp
