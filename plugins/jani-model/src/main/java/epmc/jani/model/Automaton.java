@@ -56,6 +56,8 @@ public final class Automaton implements JANINode, ExpressionToType {
     private final static String INITIAL_LOCATIONS = "initial-locations";
     /** String identifying the edges of an automaton. */
     private final static String EDGES = "edges";
+    /** String identifying the observations of an automaton. */
+    private final static String OBSERVATIONS = "observations";
     /** String identifying comment for this automaton. */
     private final static String COMMENT = "comment";
     /** String identifying initial variable values of this automaton. */
@@ -71,6 +73,8 @@ public final class Automaton implements JANINode, ExpressionToType {
     private Set<Location> initialLocations;
     /** Edges of the automaton. */
     private Edges edges = new Edges();
+    /** Observations of the automaton. */
+    private JANIObservations jANIObservations = new JANIObservations();
     /** Model of which this automaton is part of. */
     private ModelJANI model;
     /** Comment for this automaton. */
@@ -121,8 +125,12 @@ public final class Automaton implements JANINode, ExpressionToType {
         this.initialLocations = UtilJSON.toSubsetOf(object, INITIAL_LOCATIONS, locations.getLocations());
         edges.setValidIdentifiers(validIdentifiers);
         edges.setValidLocations(locations.getLocations());
-
         UtilModelParser.parse(model, edges, object, EDGES);
+        
+        jANIObservations.setValidIdentifiers(validIdentifiers);
+        jANIObservations.setValidLocations(locations.getLocations());
+        UtilModelParser.parse(model, jANIObservations, object, OBSERVATIONS);
+        
         comment = UtilJSON.getStringOrNull(object, COMMENT);
         restrictInitial = UtilModelParser.parseOptional(model, () -> {
             InitialStates initialStates = new InitialStates();
@@ -187,6 +195,7 @@ public final class Automaton implements JANINode, ExpressionToType {
         }
         result.add(INITIAL_LOCATIONS, initialLocations);
         result.add(EDGES, edges.generate());
+        result.add(OBSERVATIONS, jANIObservations.generate());
         UtilModelParser.addOptional(result, RESTRICT_INITIAL, restrictInitial);
         UtilJSON.addOptional(result, COMMENT, comment);
         return result.build();
@@ -281,6 +290,20 @@ public final class Automaton implements JANINode, ExpressionToType {
 
     public void setEdges(Edges edges) {
         this.edges = edges;
+    }
+
+    /**
+     * Obtain the observations of the automaton.
+     * This method may only be called after parsing.
+     * 
+     * @return observations of the automaton
+     */
+    public JANIObservations getObservations() {
+        return jANIObservations;
+    }
+
+    public void setObservations(JANIObservations jANIObservations) {
+        this.jANIObservations = jANIObservations;
     }
 
     @Override

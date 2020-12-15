@@ -53,6 +53,8 @@ import epmc.jani.model.InitialStates;
 import epmc.jani.model.Location;
 import epmc.jani.model.ModelExtension;
 import epmc.jani.model.ModelJANI;
+import epmc.jani.model.JANIObservation;
+import epmc.jani.model.JANIObservations;
 import epmc.jani.model.Probability;
 import epmc.jani.model.Rate;
 import epmc.jani.model.TimeProgress;
@@ -81,6 +83,7 @@ import epmc.pomdp.model.Alternative;
 import epmc.pomdp.model.Command;
 import epmc.pomdp.model.Module;
 import epmc.pomdp.model.ModuleCommands;
+import epmc.pomdp.model.Observation;
 import epmc.pomdp.model.PropertiesImpl;
 import epmc.pomdp.model.RewardStructure;
 
@@ -185,7 +188,7 @@ public final class PRISM2JANIConverter {
         	.setJANI("prism_pow")
         	.setEPMC(OperatorPRISMPow.PRISM_POW)
         	.setArity(2).build();
-        modelJANI.setName(modelPOMDP    .getIdentifier());
+        modelJANI.setName(modelPOMDP.getIdentifier());
         silentAction = new Action();
         silentAction.setModel(modelJANI);
         silentAction.setName(TAU);
@@ -217,6 +220,15 @@ public final class PRISM2JANIConverter {
         modelJANI.setModelConstants(buildConstants());
         modelJANI.getConstants().putAll(modelJANI.computeConstants());
         modelJANI.setGlobalVariables(globalVariables);
+        
+        Variables observables = new Variables();
+        for (Entry<Expression, JANIType> entry : modelPOMDP.getObservables().entrySet()) {
+            Variable observable = convertVariable((ExpressionIdentifierStandard) entry.getKey(), entry.getValue(), null);
+            observable.setModel(modelJANI);
+            observables.addVariable(observable);
+        }
+        modelJANI.setObservables(observables);
+        
         Actions actions = computeActions();
         modelJANI.setActions(actions);
         modelJANI.setRestrictInitial(computeInitialStates());
@@ -863,6 +875,84 @@ public final class PRISM2JANIConverter {
             edges.addEdge(edge);
         }
         automaton.setEdges(edges);
+
+        JANIObservations janiObservations = new JANIObservations();
+        janiObservations.setModel(modelJANI);
+        for (Observation observation : module.getObservations()) {
+            JANIObservation janiObservation = new JANIObservation();
+            janiObservation.setModel(modelJANI);
+            Action action = actions.get(((ExpressionIdentifierStandard) (observation.getAction())).getName());
+            if (action != null && action.getName().equals("")) {
+                action = null;
+            }
+            if (action == null) {
+                action = silentAction;
+            }
+            janiObservation.setAction(action);
+            janiObservation.setLocation(location);
+            if (SemanticsDTMC.isDTMC(modelPOMDP.getSemantics())) {
+                janiObservation.setRate(rateOne);
+            }
+            Guard guard = new Guard();
+            guard.setModel(modelJANI);
+            Expression expGuard = observation.getGuard();
+            guard.setExp(expGuard == null ? null : prism2jani(expGuard));
+            janiObservation.setGuard(guard);
+            Destinations destinations = janiObservation.getDestinations();
+
+            Expression totalWeight = null;
+            if (SemanticsCTMC.isCTMC(modelPOMDP.getSemantics())) {
+                for (Alternative alternative : observation.getAlternatives()) {
+                    Expression weight = alternative.getWeight();
+                    if (weight != null) {
+                        weight = prism2jani(weight);
+                    }
+                    if (totalWeight == null) {
+                        totalWeight = weight;
+                    } else {
+                        totalWeight = UtilExpressionStandard.opAdd(totalWeight, weight);
+                    }
+                }
+                Rate rate = new Rate();
+                rate.setModel(modelJANI);
+                rate.setExp(totalWeight);
+                janiObservation.setRate(rate);
+            }
+
+            for (Alternative alternative : observation.getAlternatives()) {
+                Destination destination = new Destination();
+                destination.setModel(modelJANI);
+                Expression probability = alternative.getWeight();
+                if (probability != null) {
+                    probability = prism2jani(probability);
+                }
+                if (totalWeight != null) {
+                    probability = UtilExpressionStandard.opDivide(probability, totalWeight);
+                }
+                Probability probabilityJ = new Probability();
+                probabilityJ.setModel(modelJANI);
+                probabilityJ.setExp(probability);
+                destination.setProbability(probabilityJ);
+                destination.setLocation(location);
+                Assignments assignments = new Assignments();
+                assignments.setModel(modelJANI);
+                for (Entry<Expression, Expression> entry : alternative.getEffect().entrySet()) {
+                    Variable variable = globalVariables.get(((ExpressionIdentifierStandard) entry.getKey()).getName());
+                    assert variable != null;
+                    AssignmentSimple assignment = new AssignmentSimple();
+                    assignment.setModel(modelJANI);
+                    assignment.setRef(variable);
+                    Expression value = entry.getValue();
+                    assignment.setValue(value == null ? null : prism2jani(value));
+                    assignments.addAssignment(assignment);
+                }
+                destination.setAssignments(assignments);
+                destinations.addDestination(destination);
+            }
+            janiObservations.addObservation(janiObservation);
+        }
+        automaton.setObservations(janiObservations);
+
         automaton.setName(module.getName());
         return automaton;
     }

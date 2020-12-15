@@ -271,6 +271,10 @@ public final class ModuleCommands implements Module {
     public List<Command> getCommands() {
         return Collections.unmodifiableList(commands);
     }
+    
+    public List<Observation> getObservations() {
+        return Collections.unmodifiableList(observations);
+    }
 
     @Override
     public Map<Expression,JANIType> getVariables() {

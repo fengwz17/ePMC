@@ -118,6 +118,8 @@ public final class ModelJANI implements Model, JANINode, ExpressionToType {
     private final static String PROPERTIES = "properties";
     /** Identifies the variable declaration part of a model. */
     private final static String VARIABLES = "variables";
+    /** Identifies the observable declaration part of a model. */
+    private final static String OBSERVABLES = "observables";
     /** Identifies the action set of a model. */
     private final static String ACTIONS = "actions";
     /** Name of the model (e.g. filename). */
@@ -149,6 +151,8 @@ public final class ModelJANI implements Model, JANINode, ExpressionToType {
     private Actions actions;
     /** Global variables of this model. */
     private Variables variables;
+    /** Global observables of this model. */
+    private Variables observables;
     /** Automata specification of this model. */
     private Automata automata;
     ;
@@ -307,6 +311,17 @@ public final class ModelJANI implements Model, JANINode, ExpressionToType {
                 ProblemsJANIParser.JANI_PARSER_DISJOINT_GLOBALS_CONSTANTS);
         if (variables != null) {
             validIdentifiers.putAll(variables);
+        }
+
+        observables = UtilModelParser.parseOptional(this, Variables.class, object, OBSERVABLES, validIdentifiers);
+        ensure(observables == null || constants == null
+                || Collections.disjoint(constants.keySet(), observables.keySet()),
+                ProblemsJANIParser.JANI_PARSER_DISJOINT_GLOBALS_CONSTANTS);
+        ensure(observables == null || variables == null
+                || Collections.disjoint(variables.keySet(), observables.keySet()),
+                ProblemsJANIParser.JANI_PARSER_DISJOINT_GLOBALS_CONSTANTS);
+        if (observables != null) {
+            validIdentifiers.putAll(observables);
         }
 
         restrictInitial = UtilModelParser.parseOptional(this, () -> {
@@ -485,6 +500,7 @@ public final class ModelJANI implements Model, JANINode, ExpressionToType {
         UtilModelParser.addOptional(result, ACTIONS, actions);
         UtilModelParser.addOptional(result, CONSTANTS, modelConstants);
         UtilModelParser.addOptional(result, VARIABLES, variables);
+        UtilModelParser.addOptional(result, OBSERVABLES, observables);
         UtilModelParser.addOptional(result, RESTRICT_INITIAL, restrictInitial);
         if (properties != null) {
             result.add(PROPERTIES, properties.generate());
@@ -620,6 +636,31 @@ public final class ModelJANI implements Model, JANINode, ExpressionToType {
 
     public void setGlobalVariables(Variables variables) {
         this.variables = variables;
+    }
+
+
+    /**
+     * Get the observables of this model.
+     * 
+     * @return observables of this model
+     */
+    public Variables getObservablesOrEmpty() {
+        Variables result;
+        if (observables == null) {
+            result = new Variables();
+            result.setModel(this);
+        } else {
+            result = observables;
+        }
+        return result;
+    }
+
+    public Variables getObservables() {
+        return observables;
+    }
+
+    public void setObservables(Variables observables) {
+        this.observables = observables;
     }
 
     /**

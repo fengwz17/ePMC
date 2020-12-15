@@ -957,6 +957,10 @@ public final class ModelPOMDP implements ModelJANIConverter {
         return Collections.unmodifiableMap(globalVariables);
     }
 
+    public Map<Expression, JANIType> getObservables() {
+        return Collections.unmodifiableMap(observables);
+    }
+
     private Expression createDefaultInitialStates() {
         Expression initialStates = null;
         for (Expression var : globalVariables.keySet()) {
