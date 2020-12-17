@@ -1096,13 +1096,13 @@ public final class ModelPOMDP implements ModelJANIConverter {
         for (InputStream input : inputs) {
             assert input != null;
         }
-        getLog().send(MessagesPOMDP.START_PARSING);
+        // getLog().send(MessagesPOMDP.START_PARSING);
         ensure(inputs.length == 1, ProblemsPOMDP.POMDP_ONE_MODEL_FILE, inputs.length);
         POMDPParser parser = new POMDPParser(inputs[0]);    
         parser.setPart(part);
         parser.setModel(this);
         parser.parseModel();
-        getLog().send(MessagesPOMDP.DONE_PARSING);
+        // getLog().send(MessagesPOMDP.DONE_PARSING);
     }
 
     @Override
