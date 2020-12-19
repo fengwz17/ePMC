@@ -17,9 +17,9 @@ pomdp
 const int detectRange = 10 * 10;
 const int NMAC = 3 * 3;
 
-formula disLeft = (x2 - (x1 - 1))*(x2 - (x1 - 1)) + (y2 - y1)*(y2 - y1);
-formula disRight = (x2 - (x1 + 1))*(x2 - (x1 + 1)) + (y2 - y1)*(y2 - y1);
-formula disGoAhead = (x2 - x1)*(x2 - x1) + (y2 - (y1 + 1))*(y2 - (y1 + 1));
+formula disLeft = pow((x2 - (x1 - 1)),2) + pow((y2 - y1),2);
+formula disRight = pow((x2 - (x1 + 1)),2) + pow((y2 - y1),2);
+formula disGoAhead = pow((x2 - x1),2) + pow((y2 - (y1 + 1)),2);
 
 // can observe the direction of intruder relative to own aircraft.
 observables
@@ -121,6 +121,7 @@ rewards
 	[goAhead] !(x1 = 0 & y1 = 30) : 0;  
 
 endrewards
+
 
 
 
