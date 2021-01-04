@@ -90,9 +90,19 @@ public final class LowLevelPRISMBuilder implements LowLevel.Builder {
         graphProperties = fixProperties(graphProperties);
         nodeProperties = fixProperties(nodeProperties);
         edgeProperties = fixProperties(edgeProperties);
+
         if (engine instanceof EngineExplorer
                 || engine instanceof EngineExplicit) {
             ModelJANI jani = toJANI(false);
+
+            System.out.println("jani actions: " + jani.getActions());
+            System.out.println("jani observables: " + jani.getObservables());
+            for(String i : jani.getAutomata().getAutomata().keySet())
+            {
+                System.out.println("jani getAutomaton keySet: " + i);
+            }
+            System.out.println("jani getGlobalVariables: " + jani.getGlobalVariables());
+
             return UtilModelChecker.buildLowLevel(jani, engine,
                     graphProperties, nodeProperties, edgeProperties);
         } else if (engine instanceof EngineDD){
