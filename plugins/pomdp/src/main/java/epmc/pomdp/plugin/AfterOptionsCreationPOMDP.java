@@ -8,7 +8,7 @@ import epmc.options.OptionTypeBoolean;
 import epmc.options.OptionTypeMap;
 import epmc.options.Options;
 import epmc.plugin.AfterOptionsCreation;
-import epmc.pomdp.model.LowLevelPRISMBuilder;
+import epmc.pomdp.model.LowLevelPOMDPBuilder;
 import epmc.pomdp.model.ModelPOMDP;
 import epmc.pomdp.model.PropertyPRISM;
 import epmc.pomdp.model.convert.UtilPrismConverter;
@@ -45,7 +45,7 @@ public final class AfterOptionsCreationPOMDP implements AfterOptionsCreation {
         Map<String,Class<? extends LowLevel.Builder>> map = 
                 options.get(OptionsModelChecker.LOW_LEVEL_ENGINE_CLASS);
 
-        map.put(LowLevelPRISMBuilder.IDENTIFIER, LowLevelPRISMBuilder.class);
+        map.put(LowLevelPOMDPBuilder.IDENTIFIER, LowLevelPOMDPBuilder.class);
 
         UtilPrismConverter.addOptions(options);
     }
