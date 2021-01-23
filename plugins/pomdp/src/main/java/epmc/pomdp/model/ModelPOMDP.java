@@ -791,6 +791,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
     }
 
     private void flatten() {
+        System.out.println("DEBUG: Flatten the model");
         ModuleCommands globalModule = flatten(system);
         globalVariables.putAll(globalModule.getVariables());
         globalInitValues.putAll(globalModule.getInitValues());
