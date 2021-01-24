@@ -73,7 +73,7 @@ import epmc.value.ValueInteger;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 /**
- * PRISM model representation.
+ * POMDP model representation.
  * This file represents a PRISM high-level model. The semantical models which
  * can be represented are the ones originally from PRISM, plus Markov automata.
  * Quantum Markov chains are <emph>not</emph> handled by this model. Instead,
@@ -586,6 +586,14 @@ public final class ModelPOMDP implements ModelJANIConverter {
                 ModuleCommands expanded = module.asCommands().replaceFormulas(formulas.getFormulas());
                 this.modules.add(expanded);
                 moduleByName.put(expanded.getName(), expanded);
+                System.out.println("DEBUG: Module " + expanded.getName());
+                for(Command c : expanded.getCommands()){
+                    System.out.println("DEBUG: Command " + c.toString());
+                }
+                for(Observation o : expanded.getObservations()){
+                    System.out.println("DEBUG: Observation " + o.toString());
+                }
+                
             }
         }
 
@@ -791,6 +799,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
     }
 
     private void flatten() {
+        System.out.println("DEBUG: Flatten the model");
         ModuleCommands globalModule = flatten(system);
         globalVariables.putAll(globalModule.getVariables());
         globalInitValues.putAll(globalModule.getInitValues());
@@ -1112,7 +1121,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
 
     @Override
     public ModelJANI toJANI(boolean forExporting) {
-        PRISM2JANIConverter converter = new PRISM2JANIConverter(this, forExporting);
+        POMDP2JANIConverter converter = new POMDP2JANIConverter(this, forExporting);
         return converter.convert();
     }
 
