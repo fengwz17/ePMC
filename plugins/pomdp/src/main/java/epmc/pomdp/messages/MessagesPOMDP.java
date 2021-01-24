@@ -9,6 +9,8 @@ public final class MessagesPOMDP {
     public final static Message BUILDING_DD_MODEL_DONE = newMessage().setIdentifier("building-dd-model-done").build();
     public final static Message EXPLORING = newMessage().setIdentifier("exploring").build();
     public final static Message EXPLORING_DONE = newMessage().setIdentifier("exploring-done").build();
+    public final static Message COMPUTING = newMessage().setIdentifier("computing").build();
+    public final static Message COMPUTING_DONE = newMessage().setIdentifier("computing-done").build();
     public final static Message PURE_PROB_WITH_DIR = newMessage().setIdentifier("pure-prob-with-dir").build();
     public final static Message START_PARSING = newMessage().setIdentifier("start-parsing").build();
     public final static Message DONE_PARSING = newMessage().setIdentifier("done-parsing").build();
