@@ -101,7 +101,7 @@ public final class Observation {
         return Collections.unmodifiableList(alternatives);
     }
 
-    Command replaceFormulas(Map<Expression,Expression> formulas) {
+    Observation replaceFormulas(Map<Expression,Expression> formulas) {
         assert formulas != null;
         for (Entry<Expression, Expression> entry : formulas.entrySet()) {
             assert entry.getKey() != null;
@@ -118,7 +118,7 @@ public final class Observation {
         for (Alternative alternative : alternatives) {
             newAlternatives.add(alternative.replaceFormulas(formulas));
         }
-        return new Command(this.label, newGuard, newAlternatives, positional);
+        return new Observation(this.label, newGuard, newAlternatives, positional);
     }
 
     void setPlayer(int player) {

@@ -303,6 +303,10 @@ public final class ModuleCommands implements Module {
         for (Command command : commands) {
             newCommands.add(command.replaceFormulas(map));
         }
+        ArrayList<Observation> newObservations = new ArrayList<>(); 
+        for (Observation observation : observations) {
+            newObservations.add(observation.replaceFormulas(map));
+        }
         Map<Expression,Expression> newInitValues = new HashMap<>();
         for (Entry<Expression,Expression> entry : this.initValues.entrySet()) {
             newInitValues.put(entry.getKey(), UtilExpressionStandard.replace(entry.getValue(), map));
@@ -312,7 +316,7 @@ public final class ModuleCommands implements Module {
             newVariables.put(entry.getKey(), entry.getValue().replace(map));
         }
         Expression newInvariants = UtilExpressionStandard.replace(invariants, map);
-        return new ModuleCommands(this.name, newVariables, newInitValues, newCommands, newInvariants, getPositional());
+        return new ModuleCommands(this.name, newVariables, newInitValues, newCommands, newObservations, newInvariants, getPositional());
     }
 
     ModuleCommands replaceVariables(Map<Expression,JANIType> variables) {
