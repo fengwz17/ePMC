@@ -898,6 +898,7 @@ public final class POMDP2JANIConverter {
             janiObservation.setAction(action);
             janiObservation.setLocation(location);
             if (SemanticsPOMDP.isPOMDP(modelPOMDP.getSemantics())) {
+                System.out.println("DEBUG: set rate for observations");
                 janiObservation.setRate(rateOne);
             }
             Guard guard = new Guard();

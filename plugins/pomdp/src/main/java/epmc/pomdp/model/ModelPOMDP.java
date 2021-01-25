@@ -35,6 +35,7 @@ import epmc.graph.SemanticsMA;
 import epmc.graph.SemanticsMDP;
 import epmc.graph.SemanticsNonDet;
 import epmc.graph.SemanticsSMG;
+import epmc.graph.SemanticsPOMDP;
 import epmc.jani.model.ModelJANI;
 import epmc.jani.model.ModelJANIConverter;
 import epmc.jani.model.type.JANIType;
@@ -358,6 +359,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
      * @return transformed module
      */
     private ModuleCommands postprocessMA(ModuleCommands globalModule) {
+        System.out.println("DEBUG: postprocess");
         assert globalModule != null;
         List<Command> commands = new ArrayList<>();
         List<Alternative> rateAlternatives = new ArrayList<>();
@@ -385,7 +387,14 @@ public final class ModelPOMDP implements ModelJANIConverter {
         List<Observation> observations = new ArrayList<Observation>();
         List<Alternative> obsRateAlternatives = new ArrayList<Alternative>();
         Expression obsRateGuard = ExpressionLiteral.getTrue();
-        return new ModuleCommands(globalModule.getName(), globalModule.getVariables(), globalModule.getInitValues(), commands, globalModule.getInvariants(), globalModule.getPositional());
+        for(Observation o : globalModule.getObservations()){
+
+            System.out.println("DEBUG: postprocess observation");
+            observations.add(o);
+        }
+
+
+        return new ModuleCommands(globalModule.getName(), globalModule.getVariables(), globalModule.getInitValues(), commands, observations, globalModule.getInvariants(), globalModule.getPositional());
     }
 
     private void replaceRewardsConstants(Map<Expression, Expression> formulas,
@@ -835,16 +844,19 @@ public final class ModelPOMDP implements ModelJANIConverter {
 
     private ModuleCommands flatten(SystemDefinition system) {
         if (system.isModule()) {
+            System.out.println("DEBUG: flatten is module");
             SystemModule systemModule = system.asModule();
             for (Module module : modules) {
                 if (module.getName().equals(systemModule.getModule())) {
                     assert module.isCommands();
+                    ModuleCommands newModule = module.asCommands();
                     return module.asCommands();
                 }
             }
             assert false;
             return null;
         } else if (system.isAlphaParallel()) {
+            System.out.println("DEBUG: flatten alpha parallel");
             SystemAlphaParallel systemParallel = system.asAlphaParallel();
             ModuleCommands left = flatten(systemParallel.getLeft());
             ModuleCommands right = flatten(systemParallel.getRight());
@@ -860,11 +872,13 @@ public final class ModelPOMDP implements ModelJANIConverter {
             }
             return moduleProduct(left, right, labels);
         } else if (system.isAsyncParallel()) {
+            System.out.println("DEBUG: flatten is async");
             SystemAsyncParallel systemParallel = system.asAsyncParallel();
             ModuleCommands left = flatten(systemParallel.getLeft());
             ModuleCommands right = flatten(systemParallel.getRight());
             return moduleProduct(left, right, Collections.<Expression> emptySet());
         } else if (system.isRestrictedParallel()) {
+            System.out.println("DEBUG: flatten is restricted parallel");
             SystemRestrictedParallel systemParallel = system.asRestrictedParallel();
             ModuleCommands left = flatten(systemParallel.getLeft());
             ModuleCommands right = flatten(systemParallel.getRight());
