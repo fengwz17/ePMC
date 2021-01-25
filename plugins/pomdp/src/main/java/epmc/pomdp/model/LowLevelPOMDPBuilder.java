@@ -102,14 +102,24 @@ public final class LowLevelPOMDPBuilder implements LowLevel.Builder {
             System.out.println("jani observables: " + jani.getObservables());
             for(Automaton auto : jani.getAutomata())
             {
-                System.out.println("DEBUG: automaton");
+                System.out.println("DEBUG: automaton" + auto.getName());
                 int i = 0;
                 for(Edge e : auto.getEdges()){
                     i++;
+                    //System.out.println("    DEBUG: Edge Guard: " + e.getGuard().getExp());  
                     for(epmc.jani.model.Destination d : e.getDestinations()){
-                        //aSystem.out.println("DEBUG: Edge " + i);
-                        //System.out.println("DEBUG: edge: " + e.getLocation().getName() + ", " + e.getAction().getName()  + ", " + d.getLocation().getName());
-                        //+ ", " + e.getGuard().getExp().toString() + ", " + e.getRate().toString()
+                        /*System.out.println("        DEBUG: Edge " + i);
+                        System.out.println("        DEBUG: edge: " + e.getLocation().getName() + ", " + e.getAction().getName()  + ", " + d.getLocation().getName());
+                        System.out.println("        DEBUG: rate: " + e.getRateExpression());*/
+                        //TODO: the rate is missing, should add the rate of edge
+                    }
+                }
+
+                for(JANIObservation o : auto.getObservations()){
+                    System.out.println("    DEBUG: Observation Guard: " + o.getGuard().getExp());
+                    for(epmc.jani.model.Destination d : o.getDestinations()){
+                        System.out.println("        DEBUG: ObsEdge: " + o.getLocation().getName() + ", " + d.getLocation().getName());
+                        System.out.println("        DEBUG: rate: " + o.getRateExpression());
                     }
                 }
             }

@@ -320,6 +320,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
         checkSystemDefinition();
         automataToCommands();
         if (options.getBoolean(OptionsPRISM.PRISM_FLATTEN)) {
+            System.out.println("DEBUG: begin flatten");
             flatten();
         }
         Engine engine = UtilOptions.getSingletonInstance(Options.get(),
@@ -380,6 +381,10 @@ public final class ModelPOMDP implements ModelJANIConverter {
             }
         }
         commands.add(new Command(rateLabel, rateGuard, rateAlternatives, null));
+        // ADD Observation Flatten Here
+        List<Observation> observations = new ArrayList<Observation>();
+        List<Alternative> obsRateAlternatives = new ArrayList<Alternative>();
+        Expression obsRateGuard = ExpressionLiteral.getTrue();
         return new ModuleCommands(globalModule.getName(), globalModule.getVariables(), globalModule.getInitValues(), commands, globalModule.getInvariants(), globalModule.getPositional());
     }
 
@@ -588,10 +593,21 @@ public final class ModelPOMDP implements ModelJANIConverter {
                 moduleByName.put(expanded.getName(), expanded);
                 System.out.println("DEBUG: Module " + expanded.getName());
                 for(Command c : expanded.getCommands()){
-                    System.out.println("DEBUG: Command " + c.toString());
+                    System.out.println("    DEBUG: Label " + c.getLabel());
+                    System.out.println("    DEBUG: Action " + c.getAction());
+                    System.out.println("    DEBUG: Guard " + c.getGuard());
+                    for(Alternative a : c.getAlternatives()){
+                        System.out.println("        DEBUG: Alternative" + a.toString());
+                    }
                 }
                 for(Observation o : expanded.getObservations()){
-                    System.out.println("DEBUG: Observation " + o.toString());
+                    System.out.println("    DEBUG: Observation: ");
+                    for(Alternative a : o.getAlternatives()){
+                        
+                        System.out.println("        DEBUG: Alternative" + a.toString());
+                        
+                    }
+                    
                 }
                 
             }
@@ -806,7 +822,8 @@ public final class ModelPOMDP implements ModelJANIConverter {
         globalModule = new ModuleCommands(globalModule.getName(), globalVariables,
                 globalInitValues, globalModule.getCommands(), globalModule.getInvariants(), null);
         modules.clear();
-        if (SemanticsMA.isMA(semanticsType)) {
+        if (SemanticsPOMDP.isPOMDP(semanticsType)) {
+            System.out.println("DEBUG: semantics Type");
             globalModule = postprocessMA(globalModule);
         }
         modules.add(globalModule);

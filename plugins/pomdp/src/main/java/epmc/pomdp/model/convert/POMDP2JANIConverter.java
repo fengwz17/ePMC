@@ -35,6 +35,7 @@ import epmc.expressionevaluator.ExpressionToType;
 import epmc.graph.SemanticsCTMC;
 import epmc.graph.SemanticsDTMC;
 import epmc.graph.SemanticsNonDet;
+import epmc.graph.SemanticsPOMDP;
 import epmc.jani.extensions.derivedoperators.ModelExtensionDerivedOperators;
 import epmc.jani.model.Action;
 import epmc.jani.model.Actions;
@@ -818,7 +819,8 @@ public final class POMDP2JANIConverter {
             }
             edge.setAction(action);
             edge.setLocation(location);
-            if (SemanticsDTMC.isDTMC(modelPOMDP.getSemantics())) {
+            if (SemanticsPOMDP.isPOMDP(modelPOMDP.getSemantics())) {
+                System.out.println("DEBUG: set rate for normal updates");
                 edge.setRate(rateOne);
             }
             Guard guard = new Guard();
@@ -829,7 +831,7 @@ public final class POMDP2JANIConverter {
             Destinations destinations = edge.getDestinations();
 
             Expression totalWeight = null;
-            if (SemanticsCTMC.isCTMC(modelPOMDP.getSemantics())) {
+            if (SemanticsPOMDP.isPOMDP(modelPOMDP.getSemantics())) {
                 for (Alternative alternative : command.getAlternatives()) {
                     Expression weight = alternative.getWeight();
                     if (weight != null) {
@@ -895,7 +897,7 @@ public final class POMDP2JANIConverter {
             }
             janiObservation.setAction(action);
             janiObservation.setLocation(location);
-            if (SemanticsDTMC.isDTMC(modelPOMDP.getSemantics())) {
+            if (SemanticsPOMDP.isPOMDP(modelPOMDP.getSemantics())) {
                 janiObservation.setRate(rateOne);
             }
             Guard guard = new Guard();
@@ -906,8 +908,9 @@ public final class POMDP2JANIConverter {
             Destinations destinations = janiObservation.getDestinations();
 
             Expression totalWeight = null;
-            if (SemanticsCTMC.isCTMC(modelPOMDP.getSemantics())) {
+            if (SemanticsPOMDP.isPOMDP(modelPOMDP.getSemantics())) {
                 for (Alternative alternative : observation.getAlternatives()) {
+                    System.out.println("DEBUG: Does Flattened POMDP has Observations?");
                     Expression weight = alternative.getWeight();
                     if (weight != null) {
                         weight = prism2jani(weight);
