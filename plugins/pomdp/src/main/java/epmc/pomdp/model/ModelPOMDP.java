@@ -388,7 +388,6 @@ public final class ModelPOMDP implements ModelJANIConverter {
         List<Alternative> obsRateAlternatives = new ArrayList<Alternative>();
         Expression obsRateGuard = ExpressionLiteral.getTrue();
         for(Observation o : globalModule.getObservations()){
-
             System.out.println("DEBUG: postprocess observation");
             observations.add(o);
         }
@@ -610,7 +609,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
                     }
                 }
                 for(Observation o : expanded.getObservations()){
-                    System.out.println("    DEBUG: Observation: ");
+                    System.out.println("    DEBUG: Observation: " + o.getLabel());
                     for(Alternative a : o.getAlternatives()){
                         
                         System.out.println("        DEBUG: Alternative" + a.toString());
@@ -829,7 +828,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
         globalVariables.putAll(globalModule.getVariables());
         globalInitValues.putAll(globalModule.getInitValues());
         globalModule = new ModuleCommands(globalModule.getName(), globalVariables,
-                globalInitValues, globalModule.getCommands(), globalModule.getInvariants(), null);
+                globalInitValues, globalModule.getCommands(), globalModule.getObservations(), globalModule.getInvariants(), null);
         modules.clear();
         if (SemanticsPOMDP.isPOMDP(semanticsType)) {
             System.out.println("DEBUG: semantics Type");
@@ -860,6 +859,12 @@ public final class ModelPOMDP implements ModelJANIConverter {
             SystemAlphaParallel systemParallel = system.asAlphaParallel();
             ModuleCommands left = flatten(systemParallel.getLeft());
             ModuleCommands right = flatten(systemParallel.getRight());
+            for(Observation o : left.getObservations()){
+                System.out.println("DEBUG: LEFT  has observation");
+            }
+            for(Observation o : right.getObservations()){
+                System.out.println("DEBUG: RIGHT  has observation");
+            }
             Set<Expression> labels = new HashSet<>();
             labels.addAll(left.getAlphabet());
             Set<Expression> labelsRight = right.getAlphabet();
@@ -920,15 +925,23 @@ public final class ModelPOMDP implements ModelJANIConverter {
         newInitValues.putAll(left.getInitValues());
         newInitValues.putAll(right.getInitValues());
         ArrayList<Command> newCommands = new ArrayList<>();
+        ArrayList<Observation> newObservations = new ArrayList<>();
         List<Command> leftCmds = left.getCommands();
         List<Command> rightCmds = right.getCommands();
+        if(left.getObservations().size() != 0 && right.getObservations().size() != 0){
+            System.out.println("WARNING: Observation Format Incorrect, Product will output a errornous result.");
+        }
+        List<Observation> rightObs = right.getObservations();
         Map<Expression,ArrayList<Command>> leftMap = new HashMap<>();
         Map<Expression,ArrayList<Command>> rightMap = new HashMap<>();
+        Map<Expression, ArrayList<Observation>> rightObsMap = new HashMap<>();
         for (Expression label : labels) {
             ArrayList<Command> leftList = new ArrayList<>();
             leftMap.put(label, leftList);
             ArrayList<Command> rightList = new ArrayList<>();
             rightMap.put(label, rightList);
+            ArrayList<Observation> rightObsList = new ArrayList<>();
+            rightObsMap.put(label, rightObsList);
         }
 
         for (Command leftCmd : leftCmds) {
@@ -947,9 +960,25 @@ public final class ModelPOMDP implements ModelJANIConverter {
                 newCommands.add(rightCmd);
             }
         }
+        for(Observation ro : rightObs){
+            if(labels.contains(ro.getLabel())){
+                ArrayList<Observation> rol = rightObsMap.get(ro.getLabel());
+                rol.add(ro);
+            } else {
+                newObservations.add(ro);
+            }
+        }
+        
         for (Expression label : labels) {
             for (Command leftCmd : leftMap.get(label)) {
                 for (Command rightCmd : rightMap.get(label)) {
+                    Observation currentObservation = null;
+                    for(Observation o: rightObsMap.get(label)){
+                        if(o.getGuard().equals(rightCmd.getGuard())){
+                            currentObservation = o;
+                            break;
+                        }
+                    }
                     ArrayList<Alternative> newAlternatives = new ArrayList<>();
                     Expression newGuard = and(leftCmd.getGuard(),
                             rightCmd.getGuard());
@@ -971,10 +1000,12 @@ public final class ModelPOMDP implements ModelJANIConverter {
                     Expression newLabel = null;
                     newLabel = label;
                     Command newCommand = new Command(newLabel, newGuard, newAlternatives, null);
+                    Observation newObservation = new Observation(newLabel, newGuard, currentObservation.getAlternatives(), null);
                     if (SemanticsSMG.isSMG(semanticsType)) {
                         newCommand.setPlayer(leftCmd.getPlayer());
                     }
                     newCommands.add(newCommand);
+                    newObservations.add(newObservation);
                 }
             }
         }
@@ -990,7 +1021,8 @@ public final class ModelPOMDP implements ModelJANIConverter {
         } else {
             newInvariant = null;
         }
-        return new ModuleCommands(newName, newVariables, newInitValues, newCommands, newInvariant, null);
+        
+        return new ModuleCommands(newName, newVariables, newInitValues, newCommands, newObservations, newInvariant, null);
     }
 
     public Map<Expression, JANIType> getGlobalVariables() {

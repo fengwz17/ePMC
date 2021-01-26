@@ -886,6 +886,7 @@ public final class POMDP2JANIConverter {
         JANIObservations janiObservations = new JANIObservations();
         janiObservations.setModel(modelJANI);
         for (Observation observation : module.getObservations()) {
+            System.out.println("DEBUG: Does Flattened POMDP has Observations?");
             JANIObservation janiObservation = new JANIObservation();
             janiObservation.setModel(modelJANI);
             Action action = actions.get(((ExpressionIdentifierStandard) (observation.getAction())).getName());
