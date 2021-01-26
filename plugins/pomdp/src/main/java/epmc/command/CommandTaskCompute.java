@@ -26,6 +26,8 @@ import epmc.modelchecker.ModelChecker;
 import epmc.modelchecker.ModelCheckerResult;
 import epmc.modelchecker.UtilModelChecker;
 import epmc.options.Options;
+import epmc.pomdp.model.ModelPOMDP;
+import epmc.pomdp.model.*;
 
 public class CommandTaskCompute implements CommandTask {
 
@@ -40,6 +42,18 @@ public class CommandTaskCompute implements CommandTask {
     @Override
     public void setModelChecker(ModelChecker modelChecker) {
         this.modelChecker = modelChecker;
+        Model model = modelChecker.getModel();
+        ModelPOMDP modelmodel = (ModelPOMDP)model;
+        System.out.println("DEBUG: setModelChecker");
+        for(epmc.pomdp.model.Module m : modelmodel.getModules()){
+            if(m.isCommands()){
+                ModuleCommands mc = (ModuleCommands)m;
+                for(Observation o : mc.getObservations()){
+                    System.out.println("DEBUG: here");
+                }
+            }
+        }
+        //int i = 1/0;
     }
 
     @Override

@@ -839,6 +839,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
         globalInitValues.clear();
         system = new SystemModule(globalModule.getName(), null);
         system.setModel(this);
+        //NOTE: Observation can be found here
     }
 
     private ModuleCommands flatten(SystemDefinition system) {
@@ -1173,7 +1174,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
         POMDPParser parser = new POMDPParser(inputs[0]);    
         parser.setPart(part);
         parser.setModel(this);
-        parser.parseModel();
+        ModelPOMDP parsed = parser.parseModel();
         getLog().send(MessagesPRISM.DONE_PARSING);
     }
 

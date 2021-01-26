@@ -93,7 +93,16 @@ public final class LowLevelPOMDPBuilder implements LowLevel.Builder {
         graphProperties = fixProperties(graphProperties);
         nodeProperties = fixProperties(nodeProperties);
         edgeProperties = fixProperties(edgeProperties);
-
+        ModelPOMDP transModel = (ModelPOMDP)model;
+        //int isdfsdf = 1/0;
+        for(Module m : transModel.getModules()){
+            if(m.isCommands()){
+                ModuleCommands mc = (ModuleCommands)m;
+                for(Observation o : mc.getObservations()){
+                    System.out.println("DEBUG: get observation before lowlevel" + o.toString());
+                }
+            }
+        }
         if (engine instanceof EngineExplorer
                 || engine instanceof EngineExplicit) {
             ModelJANI jani = toJANI(false);
