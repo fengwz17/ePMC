@@ -190,7 +190,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
         }
     }
 
-    public final static String IDENTIFIER = "prism";
+    public final static String IDENTIFIER = "pomdp";
     private final static String DEADLOCK = "\"deadlock\"";
     private final static String INIT = "\"init\"";
     private final static String RATE = "rate";
@@ -827,19 +827,26 @@ public final class ModelPOMDP implements ModelJANIConverter {
         ModuleCommands globalModule = flatten(system);
         globalVariables.putAll(globalModule.getVariables());
         globalInitValues.putAll(globalModule.getInitValues());
+
         globalModule = new ModuleCommands(globalModule.getName(), globalVariables,
                 globalInitValues, globalModule.getCommands(), globalModule.getObservations(), globalModule.getInvariants(), null);
         modules.clear();
+
         if (SemanticsPOMDP.isPOMDP(semanticsType)) {
             System.out.println("DEBUG: semantics Type");
             globalModule = postprocessMA(globalModule);
         }
+
         modules.add(globalModule);
         globalVariables.clear();
         globalInitValues.clear();
+        System.out.println("DEBUG: globalModule Name: " + globalModule.getName());
         system = new SystemModule(globalModule.getName(), null);
         system.setModel(this);
-        //NOTE: Observation can be found here
+        
+        for(Observation o : globalModule.getObservations()){
+            System.out.println("DEBUG: globalModule has observation");
+        }
     }
 
     private ModuleCommands flatten(SystemDefinition system) {

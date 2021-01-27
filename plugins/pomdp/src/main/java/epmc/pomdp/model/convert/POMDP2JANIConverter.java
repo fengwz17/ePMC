@@ -670,6 +670,7 @@ public final class POMDP2JANIConverter {
             System.out.println("DEBUG: add to automata");
             assert module.isCommands();
             ModuleCommands moduleCommands = (ModuleCommands) module;
+            // NOTE: no observation here
             Automaton automaton = moduleToAutomaton(moduleCommands, actions, globalVariables, locationId);
             assert automaton != null;
             automaton.setNumber(number);

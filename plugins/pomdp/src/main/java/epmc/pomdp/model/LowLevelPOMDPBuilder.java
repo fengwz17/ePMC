@@ -24,7 +24,7 @@ import epmc.pomdp.model.convert.POMDP2JANIConverter;
 // import epmc.prism.model.convert.POMDP2JANIConverter;
 // TODO: add the LowLevel definition of POMDP
 public final class LowLevelPOMDPBuilder implements LowLevel.Builder {
-    public final static String IDENTIFIER = "prism";
+    public final static String IDENTIFIER = "pomdp";
     
     private Model model;
     private Engine engine;
@@ -94,10 +94,10 @@ public final class LowLevelPOMDPBuilder implements LowLevel.Builder {
         nodeProperties = fixProperties(nodeProperties);
         edgeProperties = fixProperties(edgeProperties);
         ModelPOMDP transModel = (ModelPOMDP)model;
-        //int isdfsdf = 1/0;
         for(Module m : transModel.getModules()){
             if(m.isCommands()){
                 ModuleCommands mc = (ModuleCommands)m;
+                System.out.println("Should iterate observation: ");
                 for(Observation o : mc.getObservations()){
                     System.out.println("DEBUG: get observation before lowlevel" + o.toString());
                 }

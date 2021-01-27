@@ -48,6 +48,7 @@ public class CommandTaskCompute implements CommandTask {
         for(epmc.pomdp.model.Module m : modelmodel.getModules()){
             if(m.isCommands()){
                 ModuleCommands mc = (ModuleCommands)m;
+                System.out.println("DEBUG: ModuleCommands Name: " + m.getName());
                 for(Observation o : mc.getObservations()){
                     System.out.println("DEBUG: here");
                 }
