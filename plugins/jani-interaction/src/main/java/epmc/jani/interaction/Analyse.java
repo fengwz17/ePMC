@@ -83,9 +83,7 @@ public final class Analyse {
         }
         Model model;
         try {
-            System.out.println("DEBUG:---------------BEGIN PARSING---------");
             model = parseModel(rawModel);
-            System.out.println("DEBUG:---------------END PARSING---------");
         } catch (EPMCException e) {
             log.send(e);
             Options.set(oldOptions);
@@ -139,7 +137,6 @@ public final class Analyse {
         if (rawModel == null || rawModel.getModelInputStreams().length == 0) {
             model = new ModelDummy();
         } else {
-            //int i = 1/0;
             InputStream[] inputs = rawModel.getModelInputStreams();
             model = UtilOptions.getInstance(OptionsModelChecker.MODEL_INPUT_TYPE);
             model.read(rawModel.getModelInputIdentifier(), inputs);

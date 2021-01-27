@@ -345,6 +345,14 @@ public final class ModelPOMDP implements ModelJANIConverter {
             fixUnchangedVariables();
         }
         createProperties();
+        for(Module m : this.modules){
+            if(m.isCommands()){
+                System.out.println("DEBUG: " + m.getName());
+                for(Observation o : ((ModuleCommands)m).getObservations()){
+                    System.out.println("DEBUG: ModelPOMDP build has observation");
+                }
+            }
+        }
     }
     
     /**
@@ -844,8 +852,13 @@ public final class ModelPOMDP implements ModelJANIConverter {
         system = new SystemModule(globalModule.getName(), null);
         system.setModel(this);
         
-        for(Observation o : globalModule.getObservations()){
-            System.out.println("DEBUG: globalModule has observation");
+        for(Module  m: system.getModel().getModules()){
+            if(m.isCommands()){
+                System.out.println("DEBUG: isCommands of system.getModel.getModules");
+                for(Observation o : ((ModuleCommands)m).getObservations()){
+                    System.out.println("DEBUG: globalModule has observation");
+                }
+            }
         }
     }
 
