@@ -345,7 +345,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
             fixUnchangedVariables();
         }
         createProperties();
-        for(Module m : this.modules){
+        for(Module m : this.system.getModel().getModules()){
             if(m.isCommands()){
                 System.out.println("DEBUG: " + m.getName());
                 for(Observation o : ((ModuleCommands)m).getObservations()){
@@ -819,7 +819,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
             if (module.isCommands()) {
                 ModuleCommands commandsModule = module.asCommands();
                 newModule = new ModuleCommands(module.getName(), module.getVariables(),
-                        newInitValues, commandsModule.getCommands(), commandsModule.getInvariants(), null);
+                        newInitValues, commandsModule.getCommands(),commandsModule.getObservations(), commandsModule.getInvariants(), null);
             } else {
                 assert false;
                 newModule = null;
@@ -838,19 +838,19 @@ public final class ModelPOMDP implements ModelJANIConverter {
 
         globalModule = new ModuleCommands(globalModule.getName(), globalVariables,
                 globalInitValues, globalModule.getCommands(), globalModule.getObservations(), globalModule.getInvariants(), null);
-        modules.clear();
+        this.modules.clear();
 
         if (SemanticsPOMDP.isPOMDP(semanticsType)) {
             System.out.println("DEBUG: semantics Type");
             globalModule = postprocessMA(globalModule);
         }
 
-        modules.add(globalModule);
+        this.modules.add(globalModule);
         globalVariables.clear();
         globalInitValues.clear();
         System.out.println("DEBUG: globalModule Name: " + globalModule.getName());
-        system = new SystemModule(globalModule.getName(), null);
-        system.setModel(this);
+        this.system = new SystemModule(globalModule.getName(), null);
+        this.system.setModel(this);
         
         for(Module  m: system.getModel().getModules()){
             if(m.isCommands()){

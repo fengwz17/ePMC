@@ -94,15 +94,6 @@ public final class LowLevelPOMDPBuilder implements LowLevel.Builder {
         nodeProperties = fixProperties(nodeProperties);
         edgeProperties = fixProperties(edgeProperties);
         ModelPOMDP transModel = (ModelPOMDP)model;
-        for(Module m : transModel.getModules()){
-            if(m.isCommands()){
-                ModuleCommands mc = (ModuleCommands)m;
-                System.out.println("Should iterate observation: ");
-                for(Observation o : mc.getObservations()){
-                    System.out.println("DEBUG: get observation before lowlevel" + o.toString());
-                }
-            }
-        }
         if (engine instanceof EngineExplorer
                 || engine instanceof EngineExplicit) {
             ModelJANI jani = toJANI(false);

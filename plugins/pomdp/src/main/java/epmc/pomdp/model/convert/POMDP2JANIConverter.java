@@ -887,7 +887,6 @@ public final class POMDP2JANIConverter {
         JANIObservations janiObservations = new JANIObservations();
         janiObservations.setModel(modelJANI);
         for (Observation observation : module.getObservations()) {
-            System.out.println("DEBUG: Does Flattened POMDP has Observations?");
             JANIObservation janiObservation = new JANIObservation();
             janiObservation.setModel(modelJANI);
             Action action = actions.get(((ExpressionIdentifierStandard) (observation.getAction())).getName());
@@ -913,7 +912,6 @@ public final class POMDP2JANIConverter {
             Expression totalWeight = null;
             if (SemanticsPOMDP.isPOMDP(modelPOMDP.getSemantics())) {
                 for (Alternative alternative : observation.getAlternatives()) {
-                    System.out.println("DEBUG: Does Flattened POMDP has Observations?");
                     Expression weight = alternative.getWeight();
                     if (weight != null) {
                         weight = prism2jani(weight);
@@ -926,6 +924,8 @@ public final class POMDP2JANIConverter {
                 }
                 Rate rate = new Rate();
                 rate.setModel(modelJANI);
+                // the weight of the observation transition is total weight
+                // TODO: extract the weight of each alternative
                 rate.setExp(totalWeight);
                 janiObservation.setRate(rate);
             }
