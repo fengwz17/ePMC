@@ -122,6 +122,8 @@ public final class ModelJANI implements Model, JANINode, ExpressionToType {
     private final static String OBSERVABLES = "observables";
     /** Identifies the action set of a model. */
     private final static String ACTIONS = "actions";
+    /** Identifies the observable declaration part of a model. */
+    private final static String REWARDS = "rewards";
     /** Name of the model (e.g. filename). */
     private final static String NAME = "name";
     /** JANI version. */
@@ -155,7 +157,10 @@ public final class ModelJANI implements Model, JANINode, ExpressionToType {
     private Variables observables;
     /** Automata specification of this model. */
     private Automata automata;
+    
     ;
+    /** Rewards of the automata */
+    private JANIRewards rewards;
     /** System specification of this model. */
     private Component system;
     /** Silent action used for this model. */
@@ -324,6 +329,8 @@ public final class ModelJANI implements Model, JANINode, ExpressionToType {
             validIdentifiers.putAll(observables);
         }
 
+        rewards = UtilModelParser.parseOptional(this, JANIRewards.class, object, REWARDS, validIdentifiers);
+
         restrictInitial = UtilModelParser.parseOptional(this, () -> {
             InitialStates initialStates = new InitialStates();
             initialStates = new InitialStates();
@@ -487,6 +494,14 @@ public final class ModelJANI implements Model, JANINode, ExpressionToType {
 
     public String getName() {
         return name;
+    }
+
+    public void setRewards(JANIRewards rewards){
+        this.rewards = rewards;
+    }
+
+    public JANIRewards getRewards(){
+        return this.rewards;
     }
 
     @Override

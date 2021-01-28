@@ -12,6 +12,9 @@ import epmc.expression.standard.RewardSpecificationImpl;
 import epmc.graph.LowLevel;
 import epmc.graph.LowLevel.Builder;
 import epmc.jani.model.ModelJANI;
+import epmc.jani.model.Probability;
+import epmc.jani.model.JANIRewards;
+import epmc.jani.model.JANIReward;
 import epmc.jani.model.*;
 import epmc.modelchecker.Engine;
 import epmc.modelchecker.EngineDD;
@@ -102,25 +105,39 @@ public final class LowLevelPOMDPBuilder implements LowLevel.Builder {
             System.out.println("jani observables: " + jani.getObservables());
             for(Automaton auto : jani.getAutomata())
             {
-                System.out.println("DEBUG: automaton" + auto.getName());
+                System.out.println("DEBUG: automaton --------------------------------" + auto.getName());
+                System.out.println("DEBUG: AUTOMATON STATENUM: " + auto.getLocations().size());
                 int i = 0;
                 for(Edge e : auto.getEdges()){
                     i++;
-                    //System.out.println("    DEBUG: Edge Guard: " + e.getGuard().getExp());  
+                    //System.out.println("    ----------------------- DEBUG: Edge Guard: " + e.getGuard().getExp());  
+                    int j = 0;
                     for(epmc.jani.model.Destination d : e.getDestinations()){
-                        /*System.out.println("        DEBUG: Edge " + i);
-                        System.out.println("        DEBUG: edge: " + e.getLocation().getName() + ", " + e.getAction().getName()  + ", " + d.getLocation().getName());
-                        System.out.println("        DEBUG: rate: " + e.getRateExpression());*/
+                        j ++;
+                        System.out.println("        DEBUG: Edge " + i);
+                        System.out.println("        DEBUG: probability: " + d.getProbability().getExp());
                         //TODO: the rate is missing, should add the rate of edge
                     }
                 }
-
+                i = 0;
                 for(JANIObservation o : auto.getObservations()){
-                    System.out.println("    DEBUG: Observation Guard: " + o.getGuard().getExp());
+                    //System.out.println("    -------------------------- DEBUG: Observation Guard: " + o.getGuard().getExp());
                     for(epmc.jani.model.Destination d : o.getDestinations()){
-                        System.out.println("        DEBUG: ObsEdge: " + o.getLocation().getName() + ", " + d.getLocation().getName());
-                        System.out.println("        DEBUG: rate: " + o.getRateExpression());
+                        System.out.println("        DEBUG: ObsEdge: " + i);
+                        i++;
+                        System.out.println("        DEBUG: probability: " + d.getProbability().getExp());
                     }
+                }
+            }
+            for(JANIReward jr : jani.getRewards()){
+                System.out.println("DEBUG: jani reward is state reward: " + jr.isStateReward());
+                if(jr.isStateReward()){
+                    System.out.println("    DEBUG: guard: " + jr.getGuard().getExp());
+                    System.out.println("    DEBUG: value: " + jr.getRewardVal());
+                } else {
+                    System.out.println("    DEBUG: action: " + jr.getAction());
+                    System.out.println("    DEBUG: guard: " + jr.getGuard().getExp());
+                    System.out.println("    DEBUG: value: " + jr.getRewardVal());
                 }
             }
             

@@ -52,8 +52,10 @@ public final class RewardStructure implements Iterable<Reward> {
         this.positional = positional;
         for (Reward reward : rewards) {
             if (reward.isStateReward()) {
+                //System.out.println("DEBUG: add state reward");
                 stateRewards.add(reward.asStateReward());
             } else if (reward.isTransitionReward()) {
+                //System.out.println("DEBUG: add transition reward");
                 transRewards.add(reward.asTransitionReward());
             } else {
                 assert false;

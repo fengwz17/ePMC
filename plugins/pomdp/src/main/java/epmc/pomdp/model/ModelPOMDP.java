@@ -345,13 +345,9 @@ public final class ModelPOMDP implements ModelJANIConverter {
             fixUnchangedVariables();
         }
         createProperties();
-        for(Module m : this.system.getModel().getModules()){
-            if(m.isCommands()){
-                System.out.println("DEBUG: " + m.getName());
-                for(Observation o : ((ModuleCommands)m).getObservations()){
-                    System.out.println("DEBUG: ModelPOMDP build has observation");
-                }
-            }
+        for(RewardStructure rs : this.getRewards()){
+            System.out.println("DEBUG: reward structure:\n" + rs.toString());
+
         }
     }
     
@@ -396,7 +392,7 @@ public final class ModelPOMDP implements ModelJANIConverter {
         List<Alternative> obsRateAlternatives = new ArrayList<Alternative>();
         Expression obsRateGuard = ExpressionLiteral.getTrue();
         for(Observation o : globalModule.getObservations()){
-            System.out.println("DEBUG: postprocess observation");
+            //System.out.println("DEBUG: postprocess observation");
             observations.add(o);
         }
 
@@ -607,24 +603,24 @@ public final class ModelPOMDP implements ModelJANIConverter {
                 ModuleCommands expanded = module.asCommands().replaceFormulas(formulas.getFormulas());
                 this.modules.add(expanded);
                 moduleByName.put(expanded.getName(), expanded);
-                System.out.println("DEBUG: Module " + expanded.getName());
-                for(Command c : expanded.getCommands()){
-                    System.out.println("    DEBUG: Label " + c.getLabel());
-                    System.out.println("    DEBUG: Action " + c.getAction());
-                    System.out.println("    DEBUG: Guard " + c.getGuard());
-                    for(Alternative a : c.getAlternatives()){
-                        System.out.println("        DEBUG: Alternative" + a.toString());
-                    }
-                }
-                for(Observation o : expanded.getObservations()){
-                    System.out.println("    DEBUG: Observation: " + o.getLabel());
-                    for(Alternative a : o.getAlternatives()){
+                // System.out.println("DEBUG: Module " + expanded.getName());
+                // for(Command c : expanded.getCommands()){
+                //     //System.out.println("    DEBUG: Label " + c.getLabel());
+                //     System.out.println("    DEBUG: Action " + c.getAction());
+                //     System.out.println("    DEBUG: Guard " + c.getGuard());
+                //     for(Alternative a : c.getAlternatives()){
+                //         System.out.println("        DEBUG: Alternative" + a.toString());
+                //     }
+                // }
+                // for(Observation o : expanded.getObservations()){
+                //     System.out.println("    DEBUG: Observation: " + o.getLabel());
+                //     for(Alternative a : o.getAlternatives()){
                         
-                        System.out.println("        DEBUG: Alternative" + a.toString());
+                //         System.out.println("        DEBUG: Alternative" + a.toString());
                         
-                    }
+                //     }
                     
-                }
+                // }
                 
             }
         }
@@ -854,9 +850,9 @@ public final class ModelPOMDP implements ModelJANIConverter {
         
         for(Module  m: system.getModel().getModules()){
             if(m.isCommands()){
-                System.out.println("DEBUG: isCommands of system.getModel.getModules");
+                //System.out.println("DEBUG: isCommands of system.getModel.getModules");
                 for(Observation o : ((ModuleCommands)m).getObservations()){
-                    System.out.println("DEBUG: globalModule has observation");
+                    //System.out.println("DEBUG: globalModule has observation");
                 }
             }
         }
@@ -880,23 +876,35 @@ public final class ModelPOMDP implements ModelJANIConverter {
             SystemAlphaParallel systemParallel = system.asAlphaParallel();
             ModuleCommands left = flatten(systemParallel.getLeft());
             ModuleCommands right = flatten(systemParallel.getRight());
-            for(Observation o : left.getObservations()){
-                System.out.println("DEBUG: LEFT  has observation");
-            }
-            for(Observation o : right.getObservations()){
-                System.out.println("DEBUG: RIGHT  has observation");
-            }
-            Set<Expression> labels = new HashSet<>();
-            labels.addAll(left.getAlphabet());
-            Set<Expression> labelsRight = right.getAlphabet();
-            labels.retainAll(labelsRight);
-            labels.remove(new ExpressionIdentifierStandard.Builder()
-                    .setName(EMPTY_LABEL)
-                    .build());
-            if (SemanticsMA.isMA(semanticsType)) {
-                labels.remove(rateIdentifier);
-            }
+            if(left.getObservations().size() > 0 && right.getObservations().size() > 0){
+                System.out.println("ERROR: Does not support production of observation updates");
+                return null;
+            } else if(left.getObservations().size() == 0 && right.getObservations().size() > 0){
+                Set<Expression> labels = new HashSet<>();
+                labels.addAll(left.getAlphabet());
+                Set<Expression> labelsRight = right.getAlphabet();
+                labels.retainAll(labelsRight);
+                labels.remove(new ExpressionIdentifierStandard.Builder()
+                        .setName(EMPTY_LABEL)
+                        .build());
+                if (SemanticsMA.isMA(semanticsType)) {
+                    labels.remove(rateIdentifier);
+                }
             return moduleProduct(left, right, labels);
+            } else {
+                Set<Expression> labels = new HashSet<>();
+                labels.addAll(left.getAlphabet());
+                Set<Expression> labelsRight = right.getAlphabet();
+                labels.retainAll(labelsRight);
+                labels.remove(new ExpressionIdentifierStandard.Builder()
+                        .setName(EMPTY_LABEL)
+                        .build());
+                if (SemanticsMA.isMA(semanticsType)) {
+                    labels.remove(rateIdentifier);
+                }
+            return moduleProduct(left, right, labels);
+            }
+            
         } else if (system.isAsyncParallel()) {
             System.out.println("DEBUG: flatten is async");
             SystemAsyncParallel systemParallel = system.asAsyncParallel();

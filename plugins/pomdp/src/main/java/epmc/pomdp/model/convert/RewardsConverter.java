@@ -102,9 +102,11 @@ final class RewardsConverter {
         RewardMethod rewardMethod = Options.get().getEnum(OptionsPRISMConverter.PRISM_CONVERTER_REWARD_METHOD);
         switch (rewardMethod) {
         case INTEGRATE:
+            System.out.println("DEBUG: rewardmethod integrate");
             attachRewardsIntegrate();
             break;
         case EXTERNAL:
+            System.out.println("DEBUG: rewardmethod externals");
             attachRewardsExternal();
             break;
         case NONE:

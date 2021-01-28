@@ -49,9 +49,6 @@ public class CommandTaskCompute implements CommandTask {
             if(m.isCommands()){
                 ModuleCommands mc = (ModuleCommands)m;
                 System.out.println("DEBUG: ModuleCommands Name: " + m.getName());
-                for(Observation o : mc.getObservations()){
-                    System.out.println("DEBUG: here");
-                }
             }
         }
         //int i = 1/0;

@@ -56,6 +56,8 @@ import epmc.jani.model.ModelExtension;
 import epmc.jani.model.ModelJANI;
 import epmc.jani.model.JANIObservation;
 import epmc.jani.model.JANIObservations;
+import epmc.jani.model.JANIReward;
+import epmc.jani.model.JANIRewards;
 import epmc.jani.model.Probability;
 import epmc.jani.model.Rate;
 import epmc.jani.model.TimeProgress;
@@ -87,7 +89,8 @@ import epmc.pomdp.model.ModuleCommands;
 import epmc.pomdp.model.Observation;
 import epmc.pomdp.model.PropertiesImpl;
 import epmc.pomdp.model.RewardStructure;
-
+import epmc.pomdp.model.StateReward;
+import epmc.pomdp.model.TransitionReward;
 // import epmc.prism.error.ProblemsPRISM;
 // import epmc.prism.model.Alternative;
 // import epmc.prism.model.Command;
@@ -280,13 +283,49 @@ public final class POMDP2JANIConverter {
     }
 
     private void convertRewards() {
-        RewardsConverter rewardsConverter = new RewardsConverter();
-        rewardsConverter.setJANIModel(modelJANI);
-        rewardsConverter.setPRISMModel(modelPOMDP);
-        rewardsConverter.setTauAction(silentAction);
-        rewardsConverter.setForExporting(forExporting);
-        rewardsConverter.attachRewards();
+        RewardStructure rs = this.modelPOMDP.getRewards().get(0);
+        if(rs != null){
+            List<JANIReward> janiRewards = new ArrayList<JANIReward>();
+            for(StateReward sr : rs.getStateRewards()){
+                janiRewards.add(computeStateReward(sr));
+            }
+            for(TransitionReward tr : rs.getTransitionRewards()){
+                janiRewards.add(computeTransitionReward(tr));
+            }
+            this.modelJANI.setRewards(new JANIRewards(modelJANI));
+            for(JANIReward jr : janiRewards){
+                this.modelJANI.getRewards().add(jr);
+            }
+        }
     }
+
+    private JANIReward computeStateReward(StateReward sr){
+        
+        JANIReward newStateReward = new JANIReward();
+        Guard newGuard = new Guard();
+        newGuard.setModel(modelJANI);
+        newGuard.setExp(sr.getGuard());
+        newStateReward.setAction(null);
+        newStateReward.setModel(modelJANI);
+        newStateReward.setGuard(newGuard);
+        newStateReward.setRewardVal(sr.getValue());
+        return newStateReward;
+    }
+
+    private JANIReward computeTransitionReward(TransitionReward tr){
+        JANIReward newTransitionReward = new JANIReward();
+        Action newAction = new Action();
+        newAction.setModel(modelJANI);
+        newAction.setName(tr.getLabel());
+        Guard newGuard = new Guard();
+        newGuard.setModel(modelJANI);
+        newGuard.setExp(tr.getGuard());
+        newTransitionReward.setAction(newAction);
+        newTransitionReward.setModel(modelJANI);
+        newTransitionReward.setGuard(newGuard);
+        newTransitionReward.setRewardVal(tr.getValue());
+        return newTransitionReward;
+    }   
 
     private Set<String> getIdentifierNames(Expression exp) {
     	Set<String> set = new HashSet<>();
@@ -792,6 +831,7 @@ public final class POMDP2JANIConverter {
         Location location = new Location();
         location.setModel(modelJANI);
         location.setName(locationId.toString());
+        locationId = locationId + 1;
         //location.setName(LOCATION_NAME);
         automaton.getLocations().add(location);
         if (module.getInvariants() != null
@@ -821,7 +861,7 @@ public final class POMDP2JANIConverter {
             edge.setAction(action);
             edge.setLocation(location);
             if (SemanticsPOMDP.isPOMDP(modelPOMDP.getSemantics())) {
-                System.out.println("DEBUG: set rate for normal updates");
+                //System.out.println("DEBUG: set rate for normal updates");
                 edge.setRate(rateOne);
             }
             Guard guard = new Guard();
@@ -835,6 +875,7 @@ public final class POMDP2JANIConverter {
             if (SemanticsPOMDP.isPOMDP(modelPOMDP.getSemantics())) {
                 for (Alternative alternative : command.getAlternatives()) {
                     Expression weight = alternative.getWeight();
+                    //System.out.println("DEBUG: weight: " + weight);
                     if (weight != null) {
                     	weight = prism2jani(weight);
                     }
@@ -899,7 +940,7 @@ public final class POMDP2JANIConverter {
             janiObservation.setAction(action);
             janiObservation.setLocation(location);
             if (SemanticsPOMDP.isPOMDP(modelPOMDP.getSemantics())) {
-                System.out.println("DEBUG: set rate for observations");
+                //System.out.println("DEBUG: set rate for observations");
                 janiObservation.setRate(rateOne);
             }
             Guard guard = new Guard();
