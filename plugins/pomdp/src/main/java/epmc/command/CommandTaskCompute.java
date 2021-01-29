@@ -28,6 +28,8 @@ import epmc.modelchecker.UtilModelChecker;
 import epmc.options.Options;
 import epmc.pomdp.model.ModelPOMDP;
 import epmc.pomdp.model.*;
+import epmc.value.ValueBoolean;
+import epmc.value.TypeBoolean;
 
 public class CommandTaskCompute implements CommandTask {
 
@@ -62,6 +64,13 @@ public class CommandTaskCompute implements CommandTask {
             Log log = getLog();
             log.send(e);
         }
+    }
+
+    public void compute(){
+        Model model = modelChecker.getModel();
+        // TODO: add the policy computing logic here
+        // NOTE: utilize methods in PolicyComputerUtil.java to get data from jani model
+        System.out.println("DEBUG: PARSE EXPRESSION");
     }
 
     public void explore() {
